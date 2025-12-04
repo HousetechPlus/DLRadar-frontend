@@ -3,11 +3,75 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const demoCounties = [
+const flCounties = [
   "All counties",
-  "Orange County",
-  "Miami-Dade County",
+  "Alachua County",
+  "Baker County",
+  "Bay County",
+  "Bradford County",
+  "Brevard County",
+  "Broward County",
+  "Calhoun County",
+  "Charlotte County",
+  "Citrus County",
+  "Clay County",
+  "Collier County",
+  "Columbia County",
+  "DeSoto County",
+  "Dixie County",
+  "Duval County",
+  "Escambia County",
+  "Flagler County",
+  "Franklin County",
+  "Gadsden County",
+  "Gilchrist County",
+  "Glades County",
+  "Gulf County",
+  "Hamilton County",
+  "Hardee County",
+  "Hendry County",
+  "Hernando County",
+  "Highlands County",
   "Hillsborough County",
+  "Holmes County",
+  "Indian River County",
+  "Jackson County",
+  "Jefferson County",
+  "Lafayette County",
+  "Lake County",
+  "Lee County",
+  "Leon County",
+  "Levy County",
+  "Liberty County",
+  "Madison County",
+  "Manatee County",
+  "Marion County",
+  "Martin County",
+  "Miami-Dade County",
+  "Monroe County",
+  "Nassau County",
+  "Okaloosa County",
+  "Okeechobee County",
+  "Orange County",
+  "Osceola County",
+  "Palm Beach County",
+  "Pasco County",
+  "Pinellas County",
+  "Polk County",
+  "Putnam County",
+  "Santa Rosa County",
+  "Sarasota County",
+  "Seminole County",
+  "St. Johns County",
+  "St. Lucie County",
+  "Sumter County",
+  "Suwannee County",
+  "Taylor County",
+  "Union County",
+  "Volusia County",
+  "Wakulla County",
+  "Walton County",
+  "Washington County",
 ];
 
 export default function FlCountiesPage() {
@@ -54,18 +118,22 @@ export default function FlCountiesPage() {
           <p className="mt-2 text-sm text-slate-300">
             After selecting Florida, choose whether to scan all counties or
             specific ones, then add filters before getting your property list.
-            This demo wires into your current example records.
+            This demo wires into your current example records, and the county
+            names match DLRadar&apos;s backend naming.
           </p>
         </header>
 
         <section className="grid gap-6 md:grid-cols-2 text-sm">
           {/* County selection */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 max-h-[480px] overflow-y-auto">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              Counties
+              Florida counties
             </h2>
+            <p className="mt-1 text-[11px] text-slate-500">
+              Select &quot;All counties&quot; or one or more specific counties.
+            </p>
             <div className="mt-3 space-y-2">
-              {demoCounties.map((name) => {
+              {flCounties.map((name) => {
                 const selected = selectedCounties.includes(name);
                 return (
                   <button
@@ -125,18 +193,18 @@ export default function FlCountiesPage() {
                 />
               </div>
             </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSearch}
+                className="rounded-full border border-sky-500 bg-sky-500/10 px-5 py-2 text-sm font-medium text-sky-200 hover:bg-sky-500/20"
+              >
+                Get property list
+              </button>
+            </div>
           </div>
         </section>
-
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={handleSearch}
-            className="rounded-full border border-sky-500 bg-sky-500/10 px-5 py-2 text-sm font-medium text-sky-200 hover:bg-sky-500/20"
-          >
-            Get property list
-          </button>
-        </div>
       </div>
     </main>
   );
