@@ -1,0 +1,68 @@
+[
+  {
+    "id": "US-FL-12095-fl_orange_property_001-000123456",
+    "address": "123 Sample St, Orlando, FL 32801",
+    "city": "Orlando",
+    "state_abbr": "FL",
+    "zip": "32801",
+    "county_name": "Orange County",
+    "dlradar_status": "quarantine",
+    "has_tax_lien": true,
+    "foreclosure_stage": "pre_foreclosure",
+    "valuation": {
+      "market_value_estimate": 190000,
+      "bank_appraisal_estimate": 177000
+    },
+    "tax_lien_dd": {
+      "total_delinquent_amount": 3200.5,
+      "lien_burden_score": 80
+    },
+    "foreclosure_dd": {
+      "overall_score": 78
+    }
+  },
+  {
+    "id": "US-FL-12095-fl_orange_property_001-000789012",
+    "address": "789 Stable Ln, Orlando, FL 32804",
+    "city": "Orlando",
+    "state_abbr": "FL",
+    "zip": "32804",
+    "county_name": "Orange County",
+    "dlradar_status": "active",
+    "has_tax_lien": false,
+    "foreclosure_stage": "none",
+    "valuation": {
+      "market_value_estimate": 460000,
+      "bank_appraisal_estimate": 428000
+    },
+    "tax_lien_dd": {
+      "total_delinquent_amount": 0,
+      "lien_burden_score": 100
+    },
+    "foreclosure_dd": {
+      "overall_score": 88
+    }
+  },
+  {
+    "id": "US-FL-12086-fl_miamidade_property_001-3021123456780",
+    "address": "456 Example Ave, Miami, FL 33142",
+    "city": "Miami",
+    "state_abbr": "FL",
+    "zip": "33142",
+    "county_name": "Miami-Dade County",
+    "dlradar_status": "quarantine",
+    "has_tax_lien": true,
+    "foreclosure_stage": "auction_scheduled",
+    "valuation": {
+      "market_value_estimate": 530000,
+      "bank_appraisal_estimate": 493000
+    },
+    "tax_lien_dd": {
+      "total_delinquent_amount": 8700.75,
+      "lien_burden_score": 60
+    },
+    "foreclosure_dd": {
+      "overall_score": 70
+    }
+  }
+]

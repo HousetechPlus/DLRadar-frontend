@@ -92,6 +92,44 @@ type ExampleProperty = {
     last_evaluated_at?: string;
     version?: string;
   };
+  foreclosure_dd?: {
+    property_quality_score?: number;
+    lien_risk_score?: number;
+    legal_risk_score?: number;
+    exit_fit_score?: number;
+    overall_score?: number;
+    flags?: string[];
+    summary?: string;
+    last_evaluated_at?: string;
+    version?: string;
+  };
+  market_risk?: {
+    hpi_1y_change?: number;            // e.g. 0.045 = +4.5%
+    hpi_3y_change?: number;
+    price_volatility_index?: number;   // 0–1 or 0–100
+    market_trend_label?: string;       // "rising" | "flat" | "falling" | etc.
+    data_source?: string;
+    last_updated_at?: string;
+  };
+  liquidity_risk?: {
+    median_dom?: number;               // days on market
+    annual_turnover_rate?: number;     // 0.07 = 7%
+    list_to_sale_ratio?: number;       // 0.98 = 98%
+    liquidity_label?: string;          // "high" | "medium" | "low"
+    data_source?: string;
+    last_updated_at?: string;
+  };
+  environment_risk?: {
+    flood_zone?: string;               // e.g. "X", "AE", "VE"
+    flood_risk_index?: number;         // 0–1 or 0–100
+    hurricane_wind_risk_index?: number;
+    wildfire_risk_index?: number;
+    earthquake_risk_index?: number;
+    fema_disaster_count_10y?: number;
+    environment_risk_label?: string;   // "low" | "moderate" | "elevated" | "high"
+    data_source?: string;
+    last_updated_at?: string;
+  };
 };
 
 function Badge({ children }: { children: React.ReactNode }) {
@@ -330,7 +368,7 @@ export default function ExamplePropertyPage() {
           </section>
         )}
 
-        {/* Risk section */}
+        {/* Distress Signals */}
         <section className="mt-6 rounded-2xl border border-yellow-500/20 bg-yellow-500/5 p-5">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-yellow-300">
             Distress Signals
@@ -446,6 +484,243 @@ export default function ExamplePropertyPage() {
               This tax lien snapshot is a DLRadar analysis layer based on
               delinquent tax amounts and estimated property value. It is not
               official county information.
+            </p>
+          </section>
+        )}
+
+        {/* Foreclosure Deal Snapshot (DLRadar Analysis) */}
+        {p.foreclosure_dd && (
+          <section className="mt-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 text-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-emerald-300">
+              Foreclosure Deal Snapshot (DLRadar)
+            </h2>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <div className="text-xs text-slate-400">Overall score</div>
+                <div className="mt-1 text-2xl font-semibold">
+                  {typeof p.foreclosure_dd.overall_score === "number"
+                    ? `${p.foreclosure_dd.overall_score}/100`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-400">Property quality</div>
+                <div className="mt-1 text-lg font-semibold">
+                  {p.foreclosure_dd.property_quality_score ?? "—"}/100
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-400">Lien risk</div>
+                <div className="mt-1 text-lg font-semibold">
+                  {p.foreclosure_dd.lien_risk_score ?? "—"}/100
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 text-xs">
+              <div>
+                <div className="text-slate-400">Legal risk</div>
+                <div className="font-semibold">
+                  {p.foreclosure_dd.legal_risk_score ?? "—"}/100
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">Exit fit</div>
+                <div className="font-semibold">
+                  {p.foreclosure_dd.exit_fit_score ?? "—"}/100
+                </div>
+              </div>
+            </div>
+
+            {p.foreclosure_dd.summary && (
+              <p className="mt-3 text-xs text-slate-200">
+                {p.foreclosure_dd.summary}
+              </p>
+            )}
+
+            {p.foreclosure_dd.flags && p.foreclosure_dd.flags.length > 0 && (
+              <div className="mt-3">
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  Flags
+                </div>
+                <div className="mt-1 flex flex-wrap gap-2 text-[11px]">
+                  {p.foreclosure_dd.flags.map((flag) => (
+                    <span
+                      key={flag}
+                      className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-emerald-100"
+                    >
+                      {flag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="mt-3 text-[10px] text-slate-500">
+              This snapshot is a DLRadar analysis layer built from public-record
+              data and enrichment fields. It is not part of the official public
+              record or an appraisal.
+            </p>
+          </section>
+        )}
+
+        {/* Market Risk Snapshot */}
+        {p.market_risk && (
+          <section className="mt-6 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 text-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-indigo-300">
+              Market Risk Snapshot (DLRadar)
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-3 text-xs">
+              <div>
+                <div className="text-slate-400">1-year HPI change</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.market_risk.hpi_1y_change === "number"
+                    ? `${(p.market_risk.hpi_1y_change * 100).toFixed(1)}%`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">3-year HPI change</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.market_risk.hpi_3y_change === "number"
+                    ? `${(p.market_risk.hpi_3y_change * 100).toFixed(1)}%`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">Price volatility index</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.market_risk.price_volatility_index === "number"
+                    ? p.market_risk.price_volatility_index.toFixed(2)
+                    : "—"}
+                </div>
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-slate-300">
+              Market trend:{" "}
+              <span className="font-semibold">
+                {p.market_risk.market_trend_label ?? "unknown"}
+              </span>
+            </p>
+            <p className="mt-2 text-[10px] text-slate-500">
+              Market risk metrics are derived from external indices (e.g. HPI /
+              public datasets) and represent DLRadar&apos;s view of local price
+              trend and volatility.
+            </p>
+          </section>
+        )}
+
+        {/* Liquidity Snapshot */}
+        {p.liquidity_risk && (
+          <section className="mt-6 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5 text-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-cyan-300">
+              Liquidity Snapshot (DLRadar)
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-3 text-xs">
+              <div>
+                <div className="text-slate-400">Median DOM</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.liquidity_risk.median_dom === "number"
+                    ? `${p.liquidity_risk.median_dom} days`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">Annual turnover</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.liquidity_risk.annual_turnover_rate === "number"
+                    ? `${(p.liquidity_risk.annual_turnover_rate * 100).toFixed(
+                        1,
+                      )}%`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">List-to-sale ratio</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.liquidity_risk.list_to_sale_ratio === "number"
+                    ? `${(p.liquidity_risk.list_to_sale_ratio * 100).toFixed(
+                        1,
+                      )}%`
+                    : "—"}
+                </div>
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-slate-300">
+              Liquidity:{" "}
+              <span className="font-semibold">
+                {p.liquidity_risk.liquidity_label ?? "unknown"}
+              </span>
+            </p>
+            <p className="mt-2 text-[10px] text-slate-500">
+              Liquidity metrics describe how easily similar properties transact
+              in this area (speed and depth of the local market).
+            </p>
+          </section>
+        )}
+
+        {/* Environment Risk Snapshot */}
+        {p.environment_risk && (
+          <section className="mt-6 rounded-2xl border border-red-500/20 bg-red-500/5 p-5 text-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-red-300">
+              Environment Risk Snapshot (DLRadar)
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-3 text-xs">
+              <div>
+                <div className="text-slate-400">Flood zone</div>
+                <div className="mt-1 text-base font-semibold">
+                  {p.environment_risk.flood_zone ?? "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">Flood risk index</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.environment_risk.flood_risk_index === "number"
+                    ? p.environment_risk.flood_risk_index.toFixed(2)
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">Hurricane wind risk</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.environment_risk.hurricane_wind_risk_index ===
+                  "number"
+                    ? p.environment_risk.hurricane_wind_risk_index.toFixed(2)
+                    : "—"}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 text-xs">
+              <div>
+                <div className="text-slate-400">Wildfire risk</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.environment_risk.wildfire_risk_index === "number"
+                    ? p.environment_risk.wildfire_risk_index.toFixed(2)
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">FEMA disasters (10y)</div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.environment_risk.fema_disaster_count_10y === "number"
+                    ? p.environment_risk.fema_disaster_count_10y
+                    : "—"}
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-2 text-xs text-slate-300">
+              Environment risk:{" "}
+              <span className="font-semibold">
+                {p.environment_risk.environment_risk_label ?? "unknown"}
+              </span>
+            </p>
+            <p className="mt-2 text-[10px] text-slate-500">
+              Environment risk metrics can be derived from FEMA and other
+              public datasets and indicate exposure to flood, storm, and other
+              natural hazards.
             </p>
           </section>
         )}
