@@ -56,6 +56,42 @@ type ExampleProperty = {
   tags?: string[];
   created_at: string;
   updated_at: string;
+  area_profile?: {
+    population?: number;
+    median_household_income?: number;
+    households?: number;
+    time_zone?: string;
+  };
+  valuation?: {
+    assessed_value?: number;
+    last_sale_price?: number;
+    last_sale_date?: string;
+    market_value_estimate?: number;
+    bank_appraisal_estimate?: number;
+    valuation_notes?: string;
+    valuation_version?: string;
+    last_valuated_at?: string;
+    comps?: {
+      address?: string;
+      distance_miles?: number;
+      sale_price?: number;
+      sale_date?: string;
+      sq_ft?: number;
+      lot_size_sq_ft?: number;
+      property_type?: string;
+    }[];
+  };
+  tax_lien_dd?: {
+    total_delinquent_amount?: number;
+    tax_years_owed_count?: number;
+    ltv_ratio?: number;
+    lien_burden_score?: number;
+    lien_investment_score?: number;
+    flags?: string[];
+    summary?: string;
+    last_evaluated_at?: string;
+    version?: string;
+  };
 };
 
 function Badge({ children }: { children: React.ReactNode }) {
@@ -191,7 +227,7 @@ export default function ExamplePropertyPage() {
             </div>
           </section>
 
-          {/* Right: valuation */}
+          {/* Right: valuation (raw) */}
           <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
               Valuation & Taxes
@@ -236,6 +272,64 @@ export default function ExamplePropertyPage() {
           </section>
         </div>
 
+        {/* Valuation Summary (DLRadar Analysis) */}
+        {p.valuation && (
+          <section className="mt-6 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5 text-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-300">
+              Valuation Summary (DLRadar)
+            </h2>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <div className="text-xs text-slate-400">Assessed Value</div>
+                <div className="mt-1 text-lg font-semibold">
+                  {typeof p.valuation.assessed_value === "number"
+                    ? `$${p.valuation.assessed_value.toLocaleString()}`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-400">Market Estimate</div>
+                <div className="mt-1 text-lg font-semibold text-blue-200">
+                  {typeof p.valuation.market_value_estimate === "number"
+                    ? `$${p.valuation.market_value_estimate.toLocaleString()}`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-400">
+                  Bank Appraisal Estimate
+                </div>
+                <div className="mt-1 text-lg font-semibold text-blue-200">
+                  {typeof p.valuation.bank_appraisal_estimate === "number"
+                    ? `$${p.valuation.bank_appraisal_estimate.toLocaleString()}`
+                    : "—"}
+                </div>
+              </div>
+            </div>
+
+            {p.valuation.last_sale_price && (
+              <p className="mt-3 text-xs text-slate-300">
+                Last sale recorded at{" "}
+                <span className="font-semibold">
+                  ${p.valuation.last_sale_price.toLocaleString()}
+                </span>{" "}
+                on{" "}
+                <span className="font-mono">
+                  {p.valuation.last_sale_date ?? "unknown date"}
+                </span>
+                .
+              </p>
+            )}
+
+            <p className="mt-3 text-[10px] text-slate-500">
+              These estimates are a DLRadar analysis layer computed from
+              assessed values and last recorded sale. They are not an official
+              appraisal.
+            </p>
+          </section>
+        )}
+
         {/* Risk section */}
         <section className="mt-6 rounded-2xl border border-yellow-500/20 bg-yellow-500/5 p-5">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-yellow-300">
@@ -274,6 +368,87 @@ export default function ExamplePropertyPage() {
             )}
           </ul>
         </section>
+
+        {/* Tax Lien Snapshot (DLRadar Analysis) */}
+        {p.tax_lien_dd && (
+          <section className="mt-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 text-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-300">
+              Tax Lien Snapshot (DLRadar)
+            </h2>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <div className="text-xs text-slate-400">Total delinquent</div>
+                <div className="mt-1 text-lg font-semibold">
+                  {typeof p.tax_lien_dd.total_delinquent_amount === "number"
+                    ? `$${p.tax_lien_dd.total_delinquent_amount.toLocaleString()}`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-400">Years owed</div>
+                <div className="mt-1 text-lg font-semibold">
+                  {p.tax_lien_dd.tax_years_owed_count ?? "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-400">
+                  Lien burden score (0–100)
+                </div>
+                <div className="mt-1 text-lg font-semibold">
+                  {p.tax_lien_dd.lien_burden_score ?? "—"}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 grid gap-4 sm:grid-cols-2 text-xs">
+              <div>
+                <div className="text-slate-400">Lien investment score</div>
+                <div className="font-semibold">
+                  {p.tax_lien_dd.lien_investment_score ?? "—"}/100
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400">Lien-to-value (LTV)</div>
+                <div className="font-semibold">
+                  {typeof p.tax_lien_dd.ltv_ratio === "number"
+                    ? `${(p.tax_lien_dd.ltv_ratio * 100).toFixed(1)}%`
+                    : "—"}
+                </div>
+              </div>
+            </div>
+
+            {p.tax_lien_dd.summary && (
+              <p className="mt-3 text-xs text-slate-200">
+                {p.tax_lien_dd.summary}
+              </p>
+            )}
+
+            {p.tax_lien_dd.flags && p.tax_lien_dd.flags.length > 0 && (
+              <div className="mt-3">
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  Flags
+                </div>
+                <div className="mt-1 flex flex-wrap gap-2 text-[11px]">
+                  {p.tax_lien_dd.flags.map((flag) => (
+                    <span
+                      key={flag}
+                      className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-amber-100"
+                    >
+                      {flag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="mt-3 text-[10px] text-slate-500">
+              This tax lien snapshot is a DLRadar analysis layer based on
+              delinquent tax amounts and estimated property value. It is not
+              official county information.
+            </p>
+          </section>
+        )}
 
         {/* Owner & source row */}
         <section className="mt-6 grid gap-6 md:grid-cols-2">
@@ -328,6 +503,59 @@ export default function ExamplePropertyPage() {
             </div>
           </div>
         </section>
+
+        {/* Area Profile */}
+        {p.area_profile && (
+          <section className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
+              Area Profile (ZIP Context)
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <div className="text-slate-400 text-xs uppercase">
+                  Population
+                </div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.area_profile.population === "number"
+                    ? p.area_profile.population.toLocaleString()
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400 text-xs uppercase">
+                  Median Household Income
+                </div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.area_profile.median_household_income === "number"
+                    ? `$${p.area_profile.median_household_income.toLocaleString()}`
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400 text-xs uppercase">
+                  Households
+                </div>
+                <div className="mt-1 text-base font-semibold">
+                  {typeof p.area_profile.households === "number"
+                    ? p.area_profile.households.toLocaleString()
+                    : "—"}
+                </div>
+              </div>
+              <div>
+                <div className="text-slate-400 text-xs uppercase">
+                  Time Zone
+                </div>
+                <div className="mt-1 text-base font-semibold">
+                  {p.area_profile.time_zone ?? "—"}
+                </div>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-slate-500">
+              Area profile is derived from DLRadar&apos;s US cities dataset for ZIP{" "}
+              {p.zip}.
+            </p>
+          </section>
+        )}
 
         {/* Tags */}
         {p.tags && p.tags.length > 0 && (
