@@ -1,6 +1,62 @@
-import exampleProperty from "@/data/property_example_us_fl_orange.json";
+"use client";
 
-type ExampleProperty = typeof exampleProperty;
+import { useEffect, useState } from "react";
+
+type ExampleProperty = {
+  id: string;
+  country: string;
+  state_abbr: string;
+  county_name: string;
+  county_fips?: string;
+  city: string;
+  zip: string;
+  full_address: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  property_type?: string;
+  beds?: number | null;
+  baths?: number | null;
+  sq_ft?: number | null;
+  lot_size_sq_ft?: number | null;
+  year_built?: number | null;
+  zoning?: string | null;
+  occupancy_status?: string | null;
+  owner_name?: string | null;
+  owner_mailing_address?: string | null;
+  owner_mailing_city?: string | null;
+  owner_mailing_state?: string | null;
+  owner_mailing_zip?: string | null;
+  contact_unlock_price_usd?: number | null;
+  assessed_value?: number | null;
+  assessed_value_year?: number | null;
+  last_sale_date?: string | null;
+  last_sale_price?: number | null;
+  has_tax_lien?: boolean;
+  tax_lien_details?: string | null;
+  has_code_violation?: boolean;
+  code_violation_details?: string | null;
+  foreclosure_stage?: string | null;
+  foreclosure_case_number?: string | null;
+  foreclosure_record_url?: string | null;
+  delinquent_taxes_amount?: number | null;
+  delinquent_taxes_years?: string | null;
+  dlradar_status: string;
+  quarantine_start_at?: string | null;
+  quarantine_end_at?: string | null;
+  locked_by_member_id?: string | null;
+  locked_at?: string | null;
+  source_id: string;
+  source_record_id: string;
+  source_url?: string | null;
+  source_last_checked_at: string;
+  source_status: string;
+  map_snapshot_url?: string | null;
+  photo_urls?: string[];
+  short_description?: string | null;
+  tags?: string[];
+  created_at: string;
+  updated_at: string;
+};
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +67,61 @@ function Badge({ children }: { children: React.ReactNode }) {
 }
 
 export default function ExamplePropertyPage() {
-  const p = exampleProperty as ExampleProperty;
+  const [property, setProperty] = useState<ExampleProperty | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const res = await fetch("/api/example-property");
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const data = (await res.json()) as ExampleProperty;
+        if (!cancelled) {
+          setProperty(data);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load property");
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-slate-950 text-slate-50">
+        <div className="mx-auto max-w-3xl px-4 py-10">
+          <h1 className="text-xl font-semibold mb-3">Example Property</h1>
+          <p className="text-sm text-red-400">
+            Error loading property data: {error}
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!property) {
+    return (
+      <main className="min-h-screen bg-slate-950 text-slate-50">
+        <div className="mx-auto max-w-3xl px-4 py-10">
+          <h1 className="text-xl font-semibold mb-3">Example Property</h1>
+          <p className="text-sm text-slate-300">Loading property data…</p>
+        </div>
+      </main>
+    );
+  }
+
+  const p = property;
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
@@ -19,20 +129,20 @@ export default function ExamplePropertyPage() {
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">
-              {p.full_address}
-            </h1>
+            <h1 className="text-2xl font-semibold">{p.full_address}</h1>
             <p className="text-sm text-slate-300">
               {p.city}, {p.state_abbr} {p.zip} · {p.county_name}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge>{p.property_type}</Badge>
+            {p.property_type && <Badge>{p.property_type}</Badge>}
             <Badge>Status: {p.dlradar_status}</Badge>
             {p.has_tax_lien && <Badge>Tax Lien</Badge>}
-            {p.foreclosure_stage && p.foreclosure_stage !== "none" && (
-              <Badge>Foreclosure: {p.foreclosure_stage}</Badge>
-            )}
+            {p.foreclosure_stage &&
+              p.foreclosure_stage !== "none" &&
+              p.foreclosure_stage !== "" && (
+                <Badge>Foreclosure: {p.foreclosure_stage}</Badge>
+              )}
           </div>
         </div>
 
@@ -59,20 +169,18 @@ export default function ExamplePropertyPage() {
               <div>
                 <div className="text-slate-400">Lot Size</div>
                 <div className="font-medium">
-                  {p.lot_size_sq_ft ? `${p.lot_size_sq_ft.toLocaleString()} sq ft` : "–"}
+                  {p.lot_size_sq_ft
+                    ? `${p.lot_size_sq_ft.toLocaleString()} sq ft`
+                    : "–"}
                 </div>
               </div>
               <div>
                 <div className="text-slate-400">Year Built</div>
-                <div className="font-medium">
-                  {p.year_built ?? "–"}
-                </div>
+                <div className="font-medium">{p.year_built ?? "–"}</div>
               </div>
               <div>
                 <div className="text-slate-400">Zoning</div>
-                <div className="font-medium">
-                  {p.zoning ?? "–"}
-                </div>
+                <div className="font-medium">{p.zoning ?? "–"}</div>
               </div>
               <div>
                 <div className="text-slate-400">Occupancy</div>
@@ -200,9 +308,7 @@ export default function ExamplePropertyPage() {
               </div>
               <div>
                 <span className="text-slate-400">Record ID: </span>
-                <span className="font-mono text-xs">
-                  {p.source_record_id}
-                </span>
+                <span className="font-mono text-xs">{p.source_record_id}</span>
               </div>
               {p.source_url && (
                 <div className="mt-2">
